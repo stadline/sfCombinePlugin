@@ -4,7 +4,7 @@
     "description": "Combines and compresses JavaScript and CSS files",
     "keywords": ["symfony", "combine", "js", "css", "minify"],
     "license": "MIT",
-    "homepage": "https://github.com/heristop/sfCombinePlugin",
+    "homepage": "https://github.com/stadline/sfCombinePlugin",
     "require": {
         "composer/installers": "*"
     },
