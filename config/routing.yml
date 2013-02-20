@@ -1,16 +1,11 @@
 sfCombineJs:
-  url:  /js-min/*
+  url:  /cache/js/*
   param:
     module: sfCombine
     action: js
 
 sfCombineCss:
-  url:  /css-min/*
+  url:  /cache/css/*
   param:
     module: sfCombine
     action: css
-  
-sfCombine:
-  url:  /sfCombine/:action/*
-  param:
-    module: sfCombine

@@ -137,26 +137,9 @@ class sfCombineUrl
     // Checks if key exists
     if (false === $check)
     {
-      // now just doctrine
-      if (! class_exists('sfCombine'))
-      {
-        throw new Exception('Call the task `doctrine:build-model` or use base64 url');
-      }
-      
-      $keyExists = Doctrine::getTable('sfCombine')->find($key);
-      if (!$keyExists)
-      {
-        $combine = new sfCombine();
-        $combine->setAssetKey($key);
-        $combine->setFiles($content);
-        $combine->save();
-      }
-        
       $cache->set($key, $content);
     }
     
-    
-
     return $key;
   }
 
@@ -182,13 +165,6 @@ class sfCombineUrl
         'cache_dir' => sfCombineUtility::getCacheDir()
       ));
       $base64 = $cache->get($key);
-    }
-
-    // check db
-    if (!$base64 && class_exists('sfCombine'))
-    {
-      $combine = Doctrine::getTable('sfCombine')->find($key);
-      $base64 = $combine ? $combine->getFiles() : false;
     }
 
     return self::getFilesByBase64($base64, $separator);

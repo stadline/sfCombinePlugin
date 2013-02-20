@@ -1,8 +1,11 @@
-# sfCombine Config 
+# sfCombine Config
+test:
+  sfCombinePlugin:
+    url_length_limit: 2048       # url length limit, 2048 for testing environment
 
-#dev:
-#  sfCombinePlugin:
-#    enabled:        false         # disable the plugin in development
+dev:
+  sfCombinePlugin:
+    url_length_limit: 2048       # url length limit, 2048 for development environment
 
 default:
   sfCombinePlugin:
@@ -11,8 +14,9 @@ default:
     client_cache_max_age: 10      # enable the browser to keep a copy of the files for x days (false to disable)
     pragma_header: public         # when sending cache headers sets the pragma header
     set_last_modified_header: true # whether to send a last modified header
-    gzip:           true          # allow PHP gzipping of the combined JavaScript and CSS files to reduce bandwidth usage
-    url_type:       files         # can be key, files, or base64 (note files can be buggy without an asset version)
+    gzip:             true        # allow PHP gzipping of the combined JavaScript and CSS files to reduce bandwidth usage
+    url_type:         files       # can be key, files, or base64 (note files can be buggy without an asset version)
+    url_length_limit: false       # url length limit before throwing an Exception, disabled by default, 2048 recommended
     filter_include_unused_groups: true # whether to use the filter to include groups that havent been output
     timestamp:
       enabled: true               # suffix a timestamp where available to files for their asset version
@@ -22,13 +26,13 @@ default:
       combine_skip: ~             # these files will not be combined (necessary when js code is based on js file name)
       include: true               # whether to allow the including of files
       include_suffixes:           # suffixes of files that can be included
-          - .php
+        - .php
       include_skip: ~             # files that should be skipped on includes
       minify:       true          # process js files to shrink them
       minify_method: [sfCombineMinifierJsMin, minify]
       minify_method_options: []
       minify_skip_suffixes:       # files with this suffix will not be minified
-          - .min.js
+        - .min.js
       minify_skip: ~              # these files will not be minified (useful when code is already minified)
       filename_comments: true     # include filenames of combined files in comments
       group_files: true           # minify all available files together in one minify action
@@ -41,13 +45,13 @@ default:
       combine_skip: ~             # these files will not be combined
       include: true               # whether to allow the including of files
       include_suffixes:           # suffixes of files that can be included
-          - .php
+        - .php
       include_skip: ~             # files that should be skipped on includes
       minify:       true          # process js files to shrink them
       minify_method: [sfCombineMinifierCssMin, minify]
       minify_method_options: []
       minify_skip_suffixes:       # files with this suffix should not be minified
-          - .min.css
+        - .min.css
       minify_skip: ~              # these files will not be minified (useful when code is already minified)
       filename_comments: true     # include filenames of combined files in comments
       group_files: true           # minify all available files together in one minify action
@@ -55,7 +59,7 @@ default:
       cache_minified_files: true  # cache minified versions of files (to not minify multiple times)
       keep_charset: true          # if there is a charset in a css file keep it
       prepend_imports: true       # move all imports to the top of a css file
-      prepend_imports_warning:    # if imports are moved a warning to output
-        Imports may be incorrectly placed, please remove for ideal combining
+      prepend_imports_warning: ~  # if imports are moved a warning to output
+      
       inline_minify_method: ~
       inline_minify_method_options: ~

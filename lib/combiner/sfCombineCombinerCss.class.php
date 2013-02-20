@@ -201,7 +201,7 @@ class sfCombineCombinerCss extends sfCombineCombiner
     {
 
       return 
-        ($prependWarning ? "/* $prependWarning */" : '') . "\n"
+        ($prependWarning ? "/* $prependWarning */\n" : '')
         . ($includeImports ? implode('', $matches[0]) . "\n" : '')
         . str_replace($matches[0], '', $content)
       ;

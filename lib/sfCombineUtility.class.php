@@ -115,16 +115,16 @@ class sfCombineUtility
     return false;
   }
 
-    /**
-     * Normalize a path (get rid of relatives)
-     *
-     * based on: http://stackoverflow.com/questions/4049856/replace-phps-realpath
-     *
-     * @static
-     * @param string $path
-     * @return mixed
-     */
-    static public function normalizePath($path)
+  /**
+   * Normalize a path (get rid of relatives)
+   *
+   * based on: http://stackoverflow.com/questions/4049856/replace-phps-realpath
+   *
+   * @static
+   * @param string $path
+   * @return mixed
+   */
+  static public function normalizePath($path)
   {
     if (strlen($path) == 0) {
         return $path;
@@ -206,12 +206,14 @@ class sfCombineUtility
     if ($max_age !== false)
     {
       $lifetime = $max_age * 86400; // 24*60*60
-      $response->addCacheControlHttpHeader('max-age', $lifetime);
-      $response->setHttpHeader(
-        'Pragma',
-        sfConfig::get('app_sfCombinePlugin_pragma_header', 'public')
-      );
-      $response->setHttpHeader(
+      
+	  $response->setHttpHeader(
+	    'Pragma', 'public'
+	  );
+	  $response->setHttpHeader(
+	    'Cache-Control', 'public, max-age='.$lifetime
+	  );
+	  $response->setHttpHeader(
         'Expires', $response->getDate(time() + $lifetime)
       );
     }

@@ -122,13 +122,15 @@ function get_combined_javascripts(
   $html = '';
 
   $timestampConfig = sfConfig::get('app_sfCombinePlugin_timestamp', array());
+  
   foreach ($groupedFiles as $fileDetails)
   {
-  
-    if (!$fileDetails['combinable'])
+    $files = (array) $fileDetails['files'];
+    
+    if (strpos($files[0], '://'))
     {
 
-      $file = $fileDetails['files'];
+      $file = $files[0];
 
       if (
         isset($timestampConfig['uncombinable'])
@@ -153,19 +155,29 @@ function get_combined_javascripts(
         $file,
         $fileDetails['options']
       );
+
     }
     else
     {
 
       $route = isset($config['route']) ? $config['route'] : 'sfCombine';
+	  $url = url_for(
+        '@' . $route . '?module=sfCombine&action=js&'
+        . sfCombineUrl::getUrlString(
+          $files, $fileDetails['timestamp']
+        )
+      );
+        
+      if ($limit = sfConfig::get('app_sfCombinePlugin_url_length_limit')) {
+        if (strlen($url) > $limit) throw new Exception('Combined javascript url exceeds '.$limit.' character limit');
+      }
+      elseif (sfConfig::get('sf_logging_enabled') && strlen($url) > 2048)
+      {
+        sfContext::getInstance()->getLogger()->err('Combined javascript url exceeds 2048 character limit');
+      }
 
       $html .= javascript_include_tag(
-        url_for(
-          '@' . $route . '?module=sfCombine&action=js&'
-          . sfCombineUrl::getUrlString(
-            $fileDetails['files'], $fileDetails['timestamp']
-          )
-        ),
+        $url,
         $fileDetails['options']
       );
     }
@@ -263,10 +275,12 @@ function get_combined_stylesheets(
 
   foreach ($groupedFiles as $fileDetails)
   {
-    if (!$fileDetails['combinable'])
+    $files = (array) $fileDetails['files'];
+    
+    if (strpos($files[0], '://'))
     {
 
-      $file = $fileDetails['files'];
+      $file = $files[0];
 
       if (
         isset($timestampConfig['uncombinable'])
@@ -276,6 +290,7 @@ function get_combined_stylesheets(
         $fileDetails['timestamp']
       )
       {
+        // add timestamp
         if (strpos($file, '?') !== false)
         {
           $file .= '&t=' . $fileDetails['timestamp'];
@@ -296,14 +311,24 @@ function get_combined_stylesheets(
     {
 
       $route = isset($config['route']) ? $config['route'] : 'sfCombine';
+	  $url = url_for(
+        '@' . $route . '?module=sfCombine&action=css&'
+        . sfCombineUrl::getUrlString(
+          $files, $fileDetails['timestamp']
+        )
+      );
+        
+      if ($limit = sfConfig::get('app_sfCombinePlugin_url_length_limit'))
+      {
+        if (strlen($url) > $limit) throw new Exception('Combined stylesheet url exceeds '.$limit.' character limit');
+      }
+	  elseif (sfConfig::get('sf_logging_enabled') && strlen($url) > 2048)
+      {
+        sfContext::getInstance()->getLogger()->err('Combined stylesheet url exceeds 2048 character limit');
+      }
 
       $html .= stylesheet_tag(
-        url_for(
-          '@' . $route . '?module=sfCombine&action=css&'
-          . sfCombineUrl::getUrlString(
-              $fileDetails['files'], $fileDetails['timestamp']
-            )
-        ),
+        $url,
         $fileDetails['options']
       );
     }

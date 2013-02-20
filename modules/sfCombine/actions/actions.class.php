@@ -14,16 +14,18 @@ class sfCombineActions extends sfActions
    *
    * @see     sfAction
    */
-  public function preExecute()
+  public function postExecute()
   {
     sfConfig::set('sf_web_debug', false);
-    $this->setTemplate('asset');
-
-    // cache
-    sfCombineUtility::setCacheHeaders($this->getResponse());
-
-    // gzip
-    sfCombineUtility::setGzip();
+    
+    if ($this->getResponse()->getStatusCode() == 200) {
+        // template
+        $this->setTemplate('asset');
+        // cache
+        sfCombineUtility::setCacheHeaders($this->getResponse());
+        // gzip
+        sfCombineUtility::setGzip();
+    }
   }
 
 
@@ -48,6 +50,12 @@ class sfCombineActions extends sfActions
 
     $this->_setLastModifiedHeader($combiner);
     $this->assets = $combiner->process();
+    
+    if (empty($this->assets)) {
+        $this->getResponse()->setStatusCode(404);
+        $this->getResponse()->setContent('/* 404: invalid assets */');
+		return sfView::NONE;
+    }
   }
 
   /**
@@ -71,6 +79,12 @@ class sfCombineActions extends sfActions
 
     $this->_setLastModifiedHeader($combiner);
     $this->assets = $combiner->process();
+    
+    if (empty($this->assets)) {
+        $this->getResponse()->setStatusCode(404);
+        $this->getResponse()->setContent('/* 404: invalid assets */');
+		return sfView::NONE;
+    }
   }
 
   /**
