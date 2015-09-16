@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Utility class of static methods for sfCombine
  *
@@ -25,11 +26,9 @@ class sfCombineUtility
   {
     // check for a remote or file we've specified not to combine
     if (
-      strpos($file, '://')
-      ||
+      strpos($file, '://') ||
       self::skipAsset($file, $doNotCombine)
-    )
-    {
+    ) {
       return false;
     }
 
@@ -37,17 +36,15 @@ class sfCombineUtility
     $fileParts = explode('?', $file);
     $file = $fileParts[0];
 
-    if (self::skipAsset($file, $doNotCombine))
-    {
+    if (self::skipAsset($file, $doNotCombine)) {
       return false;
     }
 
     // check absolute file exists
     if (
-      (0 === strpos($file, '/'))
-      && !self::getFilePath($file)
-    )
-    {
+      (0 === strpos($file, '/')) &&
+      !self::getFilePath($file)
+    ) {
       return false;
     }
 
@@ -64,13 +61,11 @@ class sfCombineUtility
   static public function getModifiedTimestamp($file, $assetPathMethod)
   {
     // prefix asset path (if applicable)
-    if ($assetPathMethod && is_callable($assetPathMethod))
-    {
+    if ($assetPathMethod && is_callable($assetPathMethod)) {
       $file = call_user_func($assetPathMethod, $file);
     }
 
-    if (!self::combinableFile($file, array()))
-    {
+    if (!self::combinableFile($file, array())) {
       return 0;
     }
 
@@ -78,19 +73,17 @@ class sfCombineUtility
     $file = $fileParts[0];
     $filePath = self::getFilePath($file);
 
-    if ($filePath)
-    {
+    if ($filePath) {
       $lastModified = filemtime($filePath);
 
-      if ($lastModified)
-      {
+      if ($lastModified) {
         return $lastModified;
       }
     }
 
     return 0;
-
   }
+
   /**
    * Get the path to a file as long as the file exists.
    *
@@ -104,10 +97,8 @@ class sfCombineUtility
       sfConfig::get('sf_symfony_data_dir') . '/web' . $file
     );
 
-    foreach ($paths as $path)
-    {
-      if (file_exists($path))
-      {
+    foreach ($paths as $path) {
+      if (file_exists($path)) {
         return $path;
       }
     }
@@ -127,18 +118,18 @@ class sfCombineUtility
   static public function normalizePath($path)
   {
     if (strlen($path) == 0) {
-        return $path;
+      return $path;
     }
 
     $normalizedPath = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
     $parts = array_filter(explode(DIRECTORY_SEPARATOR, $normalizedPath), 'strlen');
     $absolutes = array();
     foreach ($parts as $part) {
-      if ('.'  == $part) continue;
+      if ('.' == $part) continue;
       if ('..' == $part) {
-          array_pop($absolutes);
+        array_pop($absolutes);
       } else {
-          $absolutes[] = $part;
+        $absolutes[] = $part;
       }
     }
     $normalizedPath = implode(DIRECTORY_SEPARATOR, $absolutes);
@@ -155,9 +146,8 @@ class sfCombineUtility
    */
   static public function skipAsset($file, array $doNotCombine = array())
   {
-    return 
-      in_array($file, $doNotCombine)
-      ||
+    return
+      in_array($file, $doNotCombine) ||
       in_array(basename($file), $doNotCombine)
     ;
   }
@@ -169,8 +159,8 @@ class sfCombineUtility
    */
   static public function getCacheDir()
   {
-    return sfConfig::get('sf_cache_dir') . '/' 
-      . sfConfig::get('app_sfCombinePlugin_cache_dir','sfCombine')
+    return sfConfig::get('sf_cache_dir') . '/'
+      . sfConfig::get('app_sfCombinePlugin_cache_dir', 'sfCombine')
     ;
   }
 
@@ -184,10 +174,8 @@ class sfCombineUtility
   {
     // gzip compression
     if (
-      sfConfig::get('app_sfCombinePlugin_gzip', true)
-      && !self::_checkGzipFail()
-    )
-    {
+      sfConfig::get('app_sfCombinePlugin_gzip', true) && !self::_checkGzipFail()
+    ) {
       ob_start("ob_gzhandler");
     }
   }
@@ -200,20 +188,18 @@ class sfCombineUtility
    */
   static public function setCacheHeaders($response)
   {
-
     $max_age = sfConfig::get('app_sfCombinePlugin_client_cache_max_age', false);
 
-    if ($max_age !== false)
-    {
+    if ($max_age !== false) {
       $lifetime = $max_age * 86400; // 24*60*60
-      
-	  $response->setHttpHeader(
-	    'Pragma', 'public'
-	  );
-	  $response->setHttpHeader(
-	    'Cache-Control', 'public, max-age='.$lifetime
-	  );
-	  $response->setHttpHeader(
+
+      $response->setHttpHeader(
+        'Pragma', 'public'
+      );
+      $response->setHttpHeader(
+        'Cache-Control', 'public, max-age=' . $lifetime
+      );
+      $response->setHttpHeader(
         'Expires', $response->getDate(time() + $lifetime)
       );
     }
@@ -230,14 +216,12 @@ class sfCombineUtility
     $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
     if (
-      strpos($userAgent, 'Mozilla/4.0 (compatible; MSIE ') !== 0
-      ||
+      strpos($userAgent, 'Mozilla/4.0 (compatible; MSIE ') !== 0 ||
       strpos($userAgent, 'Opera') !== false
-    )
-    {
+    ) {
       return false;
     }
-    
+
     $version = floatval(substr($userAgent, 30));
 
     return $version < 6 || ($version == 6 && strpos($userAgent, 'SV1') === false);
@@ -250,33 +234,20 @@ class sfCombineUtility
    */
   static public function minifyInlineJs($js)
   {
-    if (!sfConfig::get('app_sfCombinePlugin_enabled', false))
-    {
+    if (!sfConfig::get('app_sfCombinePlugin_enabled', false)) {
       return $js;
     }
 
     // minify content
     $config = sfConfig::get('app_sfCombinePlugin_js', array());
+    $combinerClass = isset($config['combiner_class']) ? $config['combiner_class'] : 'sfCombineCombinerJs';
 
-    $combinerClass = isset($config['combiner_class'])
-      ? $config['combiner_class']
-      : 'sfCombineCombinerJs'
-    ;
-
-    $combiner = new $combinerClass(
-      $config
-    );
+    $combiner = new $combinerClass($config);
 
     $js = $combiner->minify(
       $js,
-      (isset($config['inline_minify_method'])
-        ? $config['inline_minify_method']
-        : false
-      ),
-      (isset($config['inline_minify_method_options'])
-        ? $config['inline_minify_method_options']
-        : array()
-      )
+      (isset($config['inline_minify_method']) ? $config['inline_minify_method'] : false),
+      (isset($config['inline_minify_method_options']) ? $config['inline_minify_method_options'] : array())
     );
 
     return $js;
@@ -289,30 +260,19 @@ class sfCombineUtility
    */
   static public function minifyInlineCss($css)
   {
-    if (!sfConfig::get('app_sfCombinePlugin_enabled', false))
-    {
+    if (!sfConfig::get('app_sfCombinePlugin_enabled', false)) {
       return $css;
     }
 
     $config = sfConfig::get('app_sfCombinePlugin_css', array());
-    $combinerClass = isset($config['combiner_class'])
-                   ? $config['combiner_class']
-                   : 'sfCombineCombinerCss';
+    $combinerClass = isset($config['combiner_class']) ? $config['combiner_class'] : 'sfCombineCombinerCss';
 
-    $combiner = new $combinerClass(
-      $config
-    );
+    $combiner = new $combinerClass($config);
 
     $css = $combiner->minify(
       $css,
-      (isset($config['inline_minify_method'])
-        ? $config['inline_minify_method']
-        : false
-      ),
-      (isset($config['inline_minify_method_options'])
-        ? $config['inline_minify_method_options']
-        : array()
-      )
+      (isset($config['inline_minify_method']) ? $config['inline_minify_method'] : false),
+      (isset($config['inline_minify_method_options']) ? $config['inline_minify_method_options'] : array())
     );
 
     return $css;
